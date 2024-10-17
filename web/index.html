@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome Complex Form</title>
+    <script src="wasm_exec.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <script>
+        window.goappOnUpdate = function() {
+            // This function will be called when the app is updated
+            console.log("App updated");
+        }
+    </script>
+
+    <script>
+        // Polyfill
+        if (!WebAssembly.instantiateStreaming) {
+            WebAssembly.instantiateStreaming = async (resp, importObject) => {
+                const source = await (await resp).arrayBuffer();
+                return await WebAssembly.instantiate(source, importObject);
+            };
+        }
+
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("app.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+    </script>
+</head>
+<body>
+    <div id="app"></div>
+</body>
+</html>
